@@ -92,6 +92,26 @@ NSMutableArray *_sharePlugins;
   [ooyalaPlayer setEmbedCode:self.embedCode];
   
   [self configureScreenshot];
+  
+  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+  [[NSNotificationCenter defaultCenter]
+   addObserver:self selector:@selector(orientationChanged:)
+   name:UIDeviceOrientationDidChangeNotification
+   object:[UIDevice currentDevice]];
+}
+
+- (void) orientationChanged:(NSNotification *)note
+{
+  if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)){
+    if (self.skinController.isFullscreen == false) {
+      [self.skinController setFullscreen: true];
+    }
+  }
+  else if (UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.skinController setFullscreen: false];
+    });
+  }
 }
 
 #pragma mark - Screenshot
